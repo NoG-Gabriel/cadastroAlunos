@@ -12,18 +12,18 @@ public class AlunoRepository {
     private Map<String, Aluno> alunos = new HashMap<>();
 
     // Salvar aluno
-    public boolean salvar(Aluno aluno) {
-        return alunos.putIfAbsent(aluno.getMatricula(), aluno) == null;
+    public void salvarAluno(Aluno aluno) {
+        alunos.put(aluno.getMatricula(), aluno);
     }
-
+    
     // Verificar se matrícula existe
-    public boolean existe(String matricula) {
+    public boolean existeMatricula(String matricula) {
     	return alunos.containsKey(matricula);
     }
 
     // Buscar aluno
     public Aluno buscarPorMatricula(String matricula) {
-        return alunos.get(matricula);
+        return alunos.get(matricula); // retornar null caso nao ache
     }
 
     // Listar todos os alunos
@@ -31,5 +31,9 @@ public class AlunoRepository {
         return new ArrayList<>(alunos.values());
     }
 
+    // Remover aluno
+    public void removerAluno(String matricula) {
+    	alunos.remove(matricula);
+    }
     
 }

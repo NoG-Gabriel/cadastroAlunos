@@ -23,6 +23,10 @@ public class Aluno {
 		this.setSituacao(Situacao.ATIVO);
 	}
 	
+	public Aluno() {
+		
+	}
+	
 	
 	
 	// Getters and Setters
