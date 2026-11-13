@@ -12,6 +12,9 @@ public class ListagemView extends BaseView {
 
     private JButton btnAtualizar;
     private JButton btnFechar;
+    private JButton btnListarCurso;
+    private JComboBox<String> cbCurso;
+    private JLabel lblTotal;
 
     public ListagemView() {
 
@@ -42,8 +45,21 @@ public class ListagemView extends BaseView {
 
         JScrollPane scroll = new JScrollPane(tabelaAlunos);
 
+        JPanel painelFiltro = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelFiltro.setOpaque(false);
+        lblTotal = new JLabel("Total de alunos: 0");
+        cbCurso = new JComboBox<>(new String[]{
+            "Análise e Desenvolvimento de Sistemas", "Administração", "Logística"
+        });
+        btnListarCurso = new JButton("Listar curso");
+        painelFiltro.add(lblTotal);
+        painelFiltro.add(new JLabel("Curso:"));
+        painelFiltro.add(cbCurso);
+        painelFiltro.add(btnListarCurso);
+
         // Substituindo o painel de campos pela tabela
         painelCentral.remove(painelCampos);
+        painelCentral.add(painelFiltro, BorderLayout.NORTH);
         painelCentral.add(scroll, BorderLayout.CENTER);
 
         btnFechar = adicionarBotao("Fechar");
@@ -64,5 +80,17 @@ public class ListagemView extends BaseView {
 
     public JButton getBtnFechar() {
         return btnFechar;
+    }
+
+    public JButton getBtnListarCurso() {
+        return btnListarCurso;
+    }
+
+    public JComboBox<String> getCbCurso() {
+        return cbCurso;
+    }
+
+    public JLabel getLblTotal() {
+        return lblTotal;
     }
 }

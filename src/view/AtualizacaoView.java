@@ -40,6 +40,7 @@ public class AtualizacaoView extends BaseView {
         txtNome.setEnabled(false);
         txtEmail.setEnabled(false);
         txtAnoIngresso.setEnabled(false);
+        txtMatricula.setEnabled(true);
         cbCurso.setEnabled(false);
         btnAtualizar.setEnabled(false);
     }

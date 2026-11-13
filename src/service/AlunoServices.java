@@ -3,6 +3,7 @@ package service;
 import repository.AlunoRepository;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
 
 import enums.Situacao;
@@ -44,20 +45,21 @@ public class AlunoServices {
 
 		// Verificar existencia de matricula
 		if (repository.existeMatricula(aluno.getMatricula())) {
-			checarSituacao(aluno.getSituacao());
 			validarNome(aluno.getNome());
 			validarEmail(aluno.getEmail());
 			validarCurso(aluno.getCurso());
 			validarAnoIngresso(aluno.getAnoIngresso());
 			
-			// Encontrando curso inserido
-			Curso curso = cursoService.encontrarCurso(aluno.getCurso().getId());
+			// Encontrando o aluno e o curso atual para manter as listas sincronizadas
+			Aluno alunoAtual = repository.buscarPorMatricula(aluno.getMatricula());
+			Curso cursoAnterior = alunoAtual.getCurso();
+			Curso cursoNovo = cursoService.encontrarCurso(aluno.getCurso().getId());
 			
-			// Sincronizando armazenamento
-			aluno.setCurso(curso);
-		    curso.adicionarAluno(aluno);
-		    
-			// Atualizar
+			if (cursoAnterior != null) {
+				cursoAnterior.removerAluno(alunoAtual);
+			}
+			aluno.setCurso(cursoNovo);
+			cursoNovo.adicionarAluno(aluno);
 			repository.salvarAluno(aluno);
 		}
 		else {
@@ -80,14 +82,21 @@ public class AlunoServices {
 	public List<Aluno> listarAlunos(){
 		return repository.listarTodos();
 	}
+
+	public List<Aluno> listarAlunosPorCurso(int idCurso) {
+		Curso curso = cursoService.encontrarCurso(idCurso);
+		return new ArrayList<>(curso.getAlunos());
+	}
 	
 	// Excluir aluno / Trocar situacao para trancado
 	public void trancarCurso(String matricula) {
-		Aluno aluno = new Aluno();
 		if (repository.existeMatricula(matricula)) {
-			aluno = repository.buscarPorMatricula(matricula); // Buscando aluno
-			aluno.setSituacao(Situacao.TRANCADO); // Mudando Situacao
-			repository.salvarAluno(aluno); // Atualiza por key ja existir
+			Aluno aluno = repository.buscarPorMatricula(matricula);
+			if (aluno.getSituacao() != Situacao.ATIVO) {
+				throw new IllegalArgumentException("Somente alunos ativos podem ser trancados!");
+			}
+			aluno.setSituacao(Situacao.TRANCADO);
+			repository.salvarAluno(aluno);
 		}
 		else {
 			throw new IllegalArgumentException("Matrícula não encontrada!");
@@ -96,11 +105,13 @@ public class AlunoServices {
 	
 	// Ativar curso trancado do aluno
 	public void ativarCurso(String matricula) {
-		Aluno aluno = new Aluno();
 		if (repository.existeMatricula(matricula)) {
-			aluno = repository.buscarPorMatricula(matricula); // Buscando aluno
-			aluno.setSituacao(Situacao.ATIVO); // Mudando Situacao
-			repository.salvarAluno(aluno); // Atualiza por key ja existir
+			Aluno aluno = repository.buscarPorMatricula(matricula);
+			if (aluno.getSituacao() != Situacao.TRANCADO) {
+				throw new IllegalArgumentException("Somente alunos trancados podem ser reativados!");
+			}
+			aluno.setSituacao(Situacao.ATIVO);
+			repository.salvarAluno(aluno);
 		}
 		else {
 			throw new IllegalArgumentException("Matrícula não encontrada!");

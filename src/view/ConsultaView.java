@@ -1,4 +1,3 @@
-
 package view;
 
 import javax.swing.*;
@@ -22,8 +21,7 @@ public class ConsultaView extends BaseView {
         txtResultado.setEditable(false);
         txtResultado.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        painelCampos.add(new JLabel("Resultado:"));
-        painelCampos.add(new JScrollPane(txtResultado));
+        adicionarLinha(new JLabel("Resultado:"), new JScrollPane(txtResultado));
 
         btnCancelar = adicionarBotao("Cancelar");
         btnConsultar = adicionarBotao("Consultar");

@@ -41,7 +41,7 @@ public class Main {
 		
 		// View 
 		HomeView home = new HomeView();
-		HomeController controller = new HomeController(home);
+		HomeController controller = new HomeController(home, alunoService, cursoService);
 	    home.setVisible(true);
 	    
 	}

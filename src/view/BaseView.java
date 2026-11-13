@@ -48,7 +48,8 @@ public abstract class BaseView extends JFrame {
             BorderFactory.createEmptyBorder(30, 40, 25, 40)
         );
 
-        painelCampos = new JPanel(new GridLayout(0, 2, 12, 15));
+        painelCampos = new JPanel();
+        painelCampos.setLayout(new BoxLayout(painelCampos, BoxLayout.Y_AXIS));
         painelCampos.setOpaque(false);
 
         painelAcoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -69,26 +70,48 @@ public abstract class BaseView extends JFrame {
 
         JTextField campo = new JTextField();
         campo.setFont(new Font("Arial", Font.PLAIN, 14));
+        campo.setPreferredSize(new Dimension(240, 30));
 
-        painelCampos.add(label);
-        painelCampos.add(campo);
+        adicionarLinha(label, campo);
 
         return campo;
     }
 
     // Adicionar lista de opções
-    protected JComboBox<String> adicionarCombo(
-            String nome, String... opcoes) {
+    protected JComboBox<String> adicionarCombo(String nome, String... opcoes) {
 
         JLabel label = new JLabel(nome);
         label.setFont(new Font("Arial", Font.BOLD, 13));
 
         JComboBox<String> combo = new JComboBox<>(opcoes);
+        combo.setPreferredSize(new Dimension(240, 30));
 
-        painelCampos.add(label);
-        painelCampos.add(combo);
+        adicionarLinha(label, combo);
 
         return combo;
+    }
+
+    protected void adicionarLinha(Component rotulo, Component campo) {
+        JPanel linha = new JPanel(new GridBagLayout());
+        linha.setOpaque(false);
+        linha.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(0, 0, 12, 10);
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.fill = GridBagConstraints.NONE;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0;
+        linha.add(rotulo, c);
+
+        c.gridx = 1;
+        c.weightx = 1;
+        c.insets = new Insets(0, 0, 12, 0);
+        linha.add(campo, c);
+
+        painelCampos.add(linha);
     }
 
     // Adicionar botão

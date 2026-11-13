@@ -1,14 +1,29 @@
 package controller;
 
-import view.HomeView;
+import view.*;
+import service.AlunoServices;
+import service.CursoService;
+import controller.CadastroController;
+import controller.AtualizacaoController;
+import controller.ConsultaController;
+import controller.ListagemController;
+import controller.RemocaoController;
+import controller.TransferenciaController;
+import controller.SituacaoController;
+
+import javax.swing.JFrame;
 
 public class HomeController {
 
     private HomeView view;
+    private final AlunoServices alunoService;
+    private final CursoService cursoService;
 
-    public HomeController(HomeView view) {
+    public HomeController(HomeView view, AlunoServices alunoService, CursoService cursoService) {
 
         this.view = view;
+        this.alunoService = alunoService;
+        this.cursoService = cursoService;
 
         inicializarEventos();
     }
@@ -16,35 +31,58 @@ public class HomeController {
     private void inicializarEventos() {
 
         view.getBtnCadastrar().addActionListener(e -> {
-            // Abrir tela de cadastro
+            CadastroView tela = new CadastroView();
+            new CadastroController(tela, alunoService, cursoService);
+            abrirTela(tela);
         });
 
         view.getBtnAtualizar().addActionListener(e -> {
-            // Abrir tela de atualização
+            AtualizacaoView tela = new AtualizacaoView();
+            new AtualizacaoController(tela, alunoService, cursoService);
+            abrirTela(tela);
         });
 
         view.getBtnConsultar().addActionListener(e -> {
-            // Abrir tela de consulta
+            ConsultaView tela = new ConsultaView();
+            new ConsultaController(tela, alunoService);
+            abrirTela(tela);
         });
 
         view.getBtnListar().addActionListener(e -> {
-            // Abrir tela de listagem
+            ListagemView tela = new ListagemView();
+            new ListagemController(tela, alunoService);
+            abrirTela(tela);
         });
 
         view.getBtnRemover().addActionListener(e -> {
-            // Abrir tela de remoção
+            RemocaoView tela = new RemocaoView();
+            new RemocaoController(tela, alunoService);
+            abrirTela(tela);
         });
 
         view.getBtnTransferir().addActionListener(e -> {
-            // Abrir tela de transferência
+            TransferenciaView tela = new TransferenciaView();
+            new TransferenciaController(tela, alunoService);
+            abrirTela(tela);
         });
 
         view.getBtnTrancar().addActionListener(e -> {
-            // Abrir tela de trancamento
+            abrirSituacao();
         });
 
         view.getBtnAtivar().addActionListener(e -> {
-            // Abrir tela de ativação
+            abrirSituacao();
         });
+    }
+
+    private void abrirTela(JFrame tela) {
+        tela.setLocationRelativeTo(view);
+        tela.setVisible(true);
+    }
+
+    private void abrirSituacao() {
+        SituacaoView tela = new SituacaoView();
+        new SituacaoController(tela, alunoService);
+        abrirTela(tela);
     }
 }
