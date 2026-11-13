@@ -8,23 +8,34 @@ import java.util.List;
 import enums.Situacao;
 import model.*;
 
-public class AlunoServices {
-	
-	private AlunoRepository repository;
+public class AlunoServices {	
 
-	public AlunoServices(AlunoRepository repository) {
-		this.repository = repository;
+	private final AlunoRepository repository;
+	private final CursoService cursoService;
+
+	public AlunoServices(AlunoRepository repository, CursoService cursoService) {
+	    this.repository = repository;
+	    this.cursoService = cursoService;
 	}
 	
 	// Cadastrar aluno
 	public void cadastrarAluno(Aluno aluno) {
 
+		// Validacao
 		validarMatricula(aluno.getMatricula());
 		validarNome(aluno.getNome());
 		validarEmail(aluno.getEmail());
 		validarCurso(aluno.getCurso());
 		validarAnoIngresso(aluno.getAnoIngresso());
 
+		// Encontrando curso inserido
+		Curso curso = cursoService.encontrarCurso(aluno.getCurso().getId());
+		
+		// Sincronizando armazenamento
+		aluno.setCurso(curso);
+	    curso.adicionarAluno(aluno);
+	    
+		// Salvar no repository
 		repository.salvarAluno(aluno);
 	}
 	
@@ -39,6 +50,14 @@ public class AlunoServices {
 			validarCurso(aluno.getCurso());
 			validarAnoIngresso(aluno.getAnoIngresso());
 			
+			// Encontrando curso inserido
+			Curso curso = cursoService.encontrarCurso(aluno.getCurso().getId());
+			
+			// Sincronizando armazenamento
+			aluno.setCurso(curso);
+		    curso.adicionarAluno(aluno);
+		    
+			// Atualizar
 			repository.salvarAluno(aluno);
 		}
 		else {
@@ -88,16 +107,46 @@ public class AlunoServices {
 		}
 	}
 	
-	// Remover aluno
+	// Atualizando Curso
+	public void atualizarCurso(String matricula, int idNovoCurso) {
+
+	    // Buscar aluno
+	    Aluno aluno = consultaAluno(matricula);
+	    checarSituacao(aluno.getSituacao());
+	    
+	    Curso novoCurso = cursoService.encontrarCurso(idNovoCurso);
+	    Curso cursoAtual = aluno.getCurso();
+	    
+	    // Verifica se ele esta sendo alterado pro mesmo curso
+	    if (cursoAtual.getId() == novoCurso.getId()) {
+	        throw new IllegalArgumentException("O aluno já pertence a este curso!");
+	    }
+	
+	    cursoAtual.removerAluno(aluno); // Removendo
+	    aluno.setCurso(novoCurso); // Salvando no novo curso
+	    novoCurso.adicionarAluno(aluno); // Adicionando aluno dentro do curso
+
+	}
+	
+	//  Remover aluno - Map e lista
 	public void removerAluno(String matricula) {
+
 		if(repository.existeMatricula(matricula)) {
-			repository.removerAluno(matricula); // Apaga do hashmap
+			
+		    Aluno aluno = consultaAluno(matricula);
+		    Curso curso = aluno.getCurso();
+		    
+		    // Remover aluno da lista do curso
+		    curso.removerAluno(aluno);
+
+		    // Remover aluno do repository
+		    repository.removerAluno(matricula);
 		}
 		else {
 			throw new IllegalArgumentException("Matrícula não encontrada!");
 		}
+
 	}
-	
 	
 	//////////////////////////
 	// |METODOS AUXILIARES| //
@@ -173,5 +222,6 @@ public class AlunoServices {
 			throw new IllegalArgumentException("O aluno não pode ser alterado!");
 		}
 	}
+	
 	
 }
